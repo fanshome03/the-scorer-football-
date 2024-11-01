@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فيلم   The Soccer Football</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+    
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #000010;
+            color: white;
+            overflow: hidden; /* إخفاء التمرير أثناء التحميل */
+        }
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000010;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loader {
+            border: 10px solid #f3f3f3;
+            border-top: 10px solid #3498db;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* مشغل الفيديو */
+        .content {
+            display: none; /* إخفاء المحتوى أثناء التحميل */
+        }
+        .video-player {
+            width: 105vw;
+            height: 180px;
+            position: relative;
+            top: 0;
+            left: 0;
+        }
+        .video-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0;
+        }
+        .pin-indicator {
+            position: absolute;
+            top: -3px;
+            right: -5px;
+            width: 150px;
+            height: 130px;
+            background-color: ;
+            border-radius: 0%;
+        }
+        .video-info {
+            padding: 10px 0;
+            border-bottom: 1px solid #fff;
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #e6e6e6;
+            transition: color 0.3s ease;
+        }
+        .video-title:hover {
+            color: #e6b800;
+        }
+        .video-description {
+            display: none;
+            font-size: 14px;
+            color: #ddd;
+            margin: 5px 0;
+        }
+        .video-stats {
+            font-size: 14px;
+            color: #ddd;
+            margin: 5px 0;
+        }
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .channel-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .video-year {
+            font-size: 12px;
+            color: #909090;
+            margin-top: 5px;
+        }
+        /* قسم الأيقونات */
+        .icon-section {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+        .icon-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+        .icon-item i {
+            font-size: 16px;
+            margin-right: 5px;
+            color: #e6e6e6;
+        }
+        /* الفيديوهات المقترحة */
+      .suggested-videos {
+    margin-top: 20px;
+    padding-left: 10px;
+    overflow-y: auto; /* السماح بالتمرير العمودي */
+    max-height: 400px; /* تعيين أقصى ارتفاع مناسب للحاوية */
+    -webkit-overflow-scrolling: touch; /* تمكين السحب باللمس لأجهزة المحمول */
+}
+
+.suggested-video {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+/* إزالة المساحات غير الضرورية */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-y: auto; /* السماح بالتمرير العمودي فقط */
+    overflow-x: hidden; /* منع التمرير الأفقي */
+}
+
+.content {
+    overflow-y: auto; /* السماح بالتمرير العمودي للمحتوى */
+    overflow-x: hidden; /* منع التمرير الأفقي للمحتوى */
+}
+
+
+        .suggested-video:hover {
+            background-color: #000010;
+            border-radius: 8px;
+        }
+        .suggested-video img {
+            width: 120px;
+            height: 67px;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        .suggested-video .details .title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e6e6e6;
+        }
+        .suggested-video .details .channel {
+            font-size: 12px;
+            color: #909090;
+        }
+        .suggested-video .details .year {
+            font-size: 12px;
+            color: #909090;
+        }
+        .icon-container {
+            margin-left: auto;
+            padding-right: 15px;
+            cursor: pointer;
+        }
+        .icon-container i {
+            font-size: 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="loader-wrapper" id="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+<div class="content">
+    <div class="video-player" id="main-video">
+    <iframe id="video-frame" src="https://drive.google.com/file/d/1Qu_XB8cAXkYqHPsRD97pbCkY7hOXCvoY/preview" allow="autoplay; fullscreen; encrypted-media" frameborder="0" allowfullscreen playsinline></iframe>
+
+        <div class="pin-indicator" id="pin-indicator"></div> <!-- إعادة المربع الأحمر -->
+    </div>
+</div>
+
+    <!-- معلومات الفيديو -->
+    <div class="video-info" id="video-info">
+        <div class="video-title" id="video-title" onclick="toggleDescription()">  The Soccer Football 
+        </div>
+        <div class="video-year" id="video-year"> Cartoon film +10 , 2022 </div>
+
+        <!-- قسم الأيقونات -->
+        
+         
+
+        <div class="video-description" id="video-description">
+          بعد سرقة عالِم شرير لموهبتهما، يلجأ نجما كرة القدم زلاتان إبراهيموفيتش و ميغان رابينو لأربعة أطفال يحبون رياضة كرة القدم من أجل مساعدهما على استعادة قدراتهما </div>
+        <div class="channel-info">
+            <img src="https://www.babup.com/do.php?img=93513" alt="Channel Image">
+            <div class="channel-name"> Fans Home  </div>
+        </div>
+    </div>
+
+    <!-- الفيديوهات المقترحة -->
+    <div class="suggested-videos">
+        <h3>| محتوى مقترح</h3>
+   <div class="suggested-video" data-id="1" onclick="window.location.href='https://fanshome0.github.io/Miraculous/'">
+    <img src="https://s01.babup.com/uploads/wp1972836.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">مغامرات الدعسوقة والقط الأسود</div>
+        <div class="channel">مدبلج بالعربية</div>
+        <div class="year">| 2015</div>
+    </div>
+    <div class="icon-container" onclick="toggleIcon(this, 1)">
+        <i class="fas fa-tv"></i>
+    </div>
+</div>
+
+        
+  <div class="suggested-video" data-id="2" onclick="window.location.href='https://fanshome01.github.io/Ben-10-Ultimate-Alien/'">
+    <img src="https://s01.babup.com/uploads/34bfc1938a906ab3245bd55f6c88e8539744325db77b07ba5d28a247c6fbd7ea_85fba.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">بن تن التمت إلين</div>
+        <div class="channel">مدبلج بالعربية  </div>
+        <div class="year">| 2010</div>
+    </div>
+    <div class="icon-container" onclick="toggleIcon(this, 2)">
+        <i class="fas fa-tv"></i>
+    </div>
+</div>
+ 
+        
+        
+        
+        
+        
+        
+        
+    </div>
+</div>
+
+<script>
+  
+  document.getElementById('video-frame').addEventListener('click', function() {
+    if (this.requestFullscreen) {
+        this.requestFullscreen();
+    } else if (this.mozRequestFullScreen) { // Firefox
+        this.mozRequestFullScreen();
+    } else if (this.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        this.webkitRequestFullscreen();
+    } else if (this.msRequestFullscreen) { // IE/Edge
+        this.msRequestFullscreen();
+    }
+});
+
+  
+    // إظهار المحتوى بعد 3 ثوانٍ من التحميل
+    window.onload = function() {
+        setTimeout(() => {
+            document.getElementById('loader-wrapper').style.display = 'none';
+            document.querySelector('.content').style.display = 'block';
+        }, 50);
+    };
+
+    // إظهار وإخفاء وصف الفيديو
+    function toggleDescription() {
+        const description = document.getElementById('video-description');
+        description.style.display = description.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // تغيير حالة مشاهدة الفيديو
+    function toggleIcon(element, videoId) {
+        event.stopPropagation(); // منع التفاعل مع العنصر الرئيسي
+        const icon = element.querySelector('i');
+        const isWatched = icon.classList.contains('fa-check-circle');
+        if (isWatched) {
+            icon.classList.remove('fa-check-circle');
+            icon.classList.add('fa-eye');
+            localStorage.removeItem(`video-${videoId}-watched`);
+        } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-check-circle');
+            localStorage.setItem(`video-${videoId}-watched`, 'true');
+        }
+    }
+
+    // تغيير الفيديو عند النقر على فيديو مقترح
+    function changeVideo(videoUrl, title, channel, year) {
+        document.getElementById('video-frame').src = videoUrl;
+        document.getElementById('video-title').textContent = title;
+        document.getElementById('video-year').textContent = `${year} | 2024/8/1`;
+        document.getElementById('video-description').textContent = channel;
+    }
+
+    // التحقق من حالة الفيديوهات عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', () => {
+        const videos = document.querySelectorAll('.suggested-video');
+        videos.forEach(video => {
+            const videoId = video.getAttribute('data-id');
+            const isWatched = localStorage.getItem(`video-${videoId}-watched`);
+            const icon = video.querySelector('i');
+            if (isWatched) {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-check-circle');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
